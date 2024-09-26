@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rover Control Interface</title>
+    <style>
+        .motor-state {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .motor {
+            width: 50px;
+            height: 50px;
+            margin: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .active {
+            background-color: green;
+        }
+        .inactive {
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rover Control Interface</h1>
+    <div id="drive-command">
+        <h2>Drive Motors</h2>
+        <div class="motor-state">
+            <div id="right1" class="motor inactive"></div>
+            <div id="right2" class="motor inactive"></div>
+            <div id="right3" class="motor inactive"></div>
+            <div id="left1" class="motor inactive"></div>
+            <div id="left2" class="motor inactive"></div>
+            <div id="left3" class="motor inactive"></div>
+        </div>
+    </div>
+    <div id="arm-command">
+        <h2>Arm Motors</h2>
+        <div class="motor-state">
+            <div id="elbow" class="motor inactive"></div>
+            <div id="wristright" class="motor inactive"></div>
+            <div id="wristleft" class="motor inactive"></div>
+            <div id="claw" class="motor inactive"></div>
+            <div id="gantry" class="motor inactive"></div>
+            <div id="shoulder" class="motor inactive"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        var socket = io();
+
+        // Listen for 'update' events from the server
+        socket.on('update', function (command) {
+            console.log('Command received: ', command);
+
+            // Parse the drive and arm command strings
+            if (command.startsWith('D_')) {
+                const parts = command.split('_');
+                document.getElementById('right1').className = parts[1] > 128 ? 'motor active' : 'motor inactive';
+                document.getElementById('right2').className = parts[2] > 128 ? 'motor active' : 'motor inactive';
+                document.getElementById('right3').className = parts[3] > 128 ? 'motor active' : 'motor inactive';
+                document.getElementById('left1').className = parts[4] > 128 ? 'motor active' : 'motor inactive';
+                document.getElementById('left2').className = parts[5] > 128 ? 'motor active' : 'motor inactive';
+                document.getElementById('left3').className = parts[6] > 128 ? 'motor active' : 'motor inactive';
+            } else if (command.startsWith('A_')) {
+                const parts = command.split('_');
+                document.getElementById('elbow').className = parts[1] > 128 ? 'motor active' : 'motor inactive';
+                document.getElementById('wristright').className = parts[2] > 128 ? 'motor active' : 'motor inactive';
+                document.getElementById('wristleft').className = parts[3] > 128 ? 'motor active' : 'motor inactive';
+                document.getElementById('claw').className = parts[4] > 128 ? 'motor active' : 'motor inactive';
+                document.getElementById('gantry').className = parts[5] > 128 ? 'motor active' : 'motor inactive';
+                document.getElementById('shoulder').className = parts[6] > 128 ? 'motor active' : 'motor inactive';
+            }
+        });
+    </script>
+</body>
+</html>
